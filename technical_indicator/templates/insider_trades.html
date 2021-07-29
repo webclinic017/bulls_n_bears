@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulls & Bears: Insider Trades</title>
+
+	<link rel="icon" type="image/png" href="{% static 'images/icons/favicon.ico' %}"/>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/animate/animate.css' %}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/select2/select2.min.css' %}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'vendor/perfect-scrollbar/perfect-scrollbar.css' %}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/util.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="{% static 'vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+	<script src="{% static 'vendor/bootstrap/js/popper.js' %}"></script>
+	<script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+
+	<script src="{% static 'vendor/select2/select2.min.js' %}"></script>
+
+	<script src="{% static 'js/main.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function worker(){
+            $.ajax({
+                type:"GET",
+                url:"{% url 'get_new_insider_data' %}",
+                success: function(data){
+                    $("#list_table_json tbody tr").remove();
+                    var event_data = '';
+                    $.each(data, function(k, v) {
+                        console.log(k, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9]);
+                        event_data += '<tr>';
+                        event_data += '<td>'+k+'</td>';
+                        event_data += '<td>'+v[0]+'</td>';
+                        event_data += '<td>'+v[1]+'</td>';
+                        event_data += '<td>'+v[2]+'</td>';
+                        event_data += '<td>'+v[3]+'</td>';
+                        event_data += '<td>'+v[4]+'</td>';
+                        event_data += '<td>'+v[5]+'</td>';
+                        event_data += '<td>'+v[6]+'</td>';
+                        event_data += '<td>'+v[7]+'</td>';
+                        event_data += '<td>'+v[8]+'</td>';
+                        event_data += '<td>'+v[9]+'</td>';
+                        event_data += '</tr>';
+                    });
+                    $("#list_table_json").append(event_data);
+                },
+                complete: function() {
+                  // Schedule the next request when the current one's complete
+                  setTimeout(worker, 300000);
+                },
+                error: function(xhr, status){
+                    console.log(status);
+                },
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="limiter">
+		<div class="container-table100">
+			<div class="wrap-table100">
+				<div class="table100">
+                  <table id="list_table_json">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Category</th>
+                            <th>Shares</th>
+                            <th>Value</th>
+                            <th>Transaction Type</th>
+                            <th>Share Holding (%)</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Intimated Company On</th>
+                            <th>Intimated Exchange On</th>
+                        </tr>
+                    </thead>
+                </table>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+<!--===============================================================================================-->
+
+</body>
+</html>
