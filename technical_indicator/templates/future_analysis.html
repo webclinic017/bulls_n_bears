@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulls & Bears</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $.ajax({
+                type:"GET",
+                url:"{% url 'check_future_price_cash_price_relationship' %}",
+                data:{csrfmiddlewaretoken:"{{csrf_token}}", 'expiry_date':"", 'pattern':""},
+                success: function(data){
+                    $.each(data, function(k, v) {
+                        console.log(v[0]);
+                        var chart = new CanvasJS.Chart("chartContainer",{
+                        title :{
+                            text: "Future Analysis"
+                        },
+                        axisX: {
+                            title: "Dates"
+                        },
+                        axisY: {
+                            title: "Arbitraj"
+                        },
+                        data: [{
+                            type: "line",
+                            dataPoints : [{x: '16-07-2021', y: v[0]}, {x: '19-07-2021', y: v[1]}, {x: '20-07-2021', y: v[2]}]
+                        }]
+                    });
+
+                    chart.render();
+                    });
+                },
+                error: function(xhr, status){
+                    console.log(status);
+                },
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="chartContainer">
+    
+</div>
+</body>
+</html>
