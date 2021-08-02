@@ -5,7 +5,27 @@ from django.db.models import JSONField
 class CompanyWiseChartData(models.Model):
     symbol = models.CharField(max_length=20, null=True, blank=True)
     last_price = JSONField(default=dict, blank=True, null=True)
+    macd = JSONField(default=dict, blank=True, null=True)
+    signal = JSONField(default=dict, blank=True, null=True)
     value = JSONField(default=dict, blank=True, null=True)
+    date_n_time = models.DateTimeField(auto_now=True)
+
+
+class CompanyWiseLiveChartData(models.Model):
+    symbol = models.CharField(max_length=20, null=True, blank=True)
+    last_price = JSONField(default=dict, blank=True, null=True)
+    macd = JSONField(default=dict, blank=True, null=True)
+    signal = JSONField(default=dict, blank=True, null=True)
+    value = JSONField(default=dict, blank=True, null=True)
+    date_n_time = models.DateTimeField(auto_now=True)
+
+
+class CompanyWiseOptionPremiumChartData(models.Model):
+    symbol = models.CharField(max_length=20, null=True, blank=True)
+    strike_price = models.FloatField(null=True, blank=True)
+    last_price = JSONField(default=dict, blank=True, null=True)
+    macd = JSONField(default=dict, blank=True, null=True)
+    signal = JSONField(default=dict, blank=True, null=True)
     date_n_time = models.DateTimeField(auto_now=True)
 
 

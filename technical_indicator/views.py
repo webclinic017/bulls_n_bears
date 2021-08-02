@@ -15,11 +15,15 @@ from rest_framework.views import APIView
 from technical_indicator.constants import CSVs
 from technical_indicator.models import CompanyWiseResistancesSupports, CompanyWiseChartData, PreData
 from technical_indicator.utils import proxylist, five_minutes_candle_data, get_pre_data, get_curr_month_last_thursday, \
-    get_new_insider_trades
+    get_new_insider_trades, get_pre_market_trades
 
 
 class FutureAnalysis(TemplateView):
     template_name = 'future_analysis.html'
+
+
+class PreMarketPriceSetUp(TemplateView):
+    template_name = 'pre_market.html'
 
 
 class InsiderTradingPage(TemplateView):
@@ -221,6 +225,20 @@ class PublishNewInsiderTrade(APIView):
             s = requests.session()
             insider_json = get_new_insider_trades(s)
             return Response(insider_json, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response("Something nt wrong", status=status.HTTP_200_OK)
+
+
+class GetPreMarketData(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            date = datetime.date.today()
+            edt = datetime.datetime(day=date.day, month=date.month, year=date.year, hour=23, minute=30, second=0)
+            if datetime.datetime.now() < edt:
+                s = requests.session()
+                pre_market_json = get_pre_market_trades(s)
+                return Response(pre_market_json, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response("Something nt wrong", status=status.HTTP_200_OK)

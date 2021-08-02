@@ -1,3 +1,10 @@
+from datetime import datetime
+
+import numpy as np
+import requests
+
+from technical_indicator.utils import get_strike_prices
+
 QUANDL_API_KEY = "Y_b6qLJZMw_gK4zuCnk3"
 COMPANIES = [
     "BANKINDIA",
@@ -153,7 +160,6 @@ COMPANIES = [
     "NAVINFLUOR",
     "DIXON",
     "CROMPTON",
-    "N",
     "HINDUNILVR",
     "IRCTC",
     "HAVELLS",

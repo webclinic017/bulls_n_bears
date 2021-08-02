@@ -6,9 +6,11 @@ import traceback
 import pytz
 import calendar
 from calendar import monthrange
+
+import requests
 from dateutil.relativedelta import relativedelta
 
-from technical_indicator.models import CompanyWiseChartData, PreData
+from technical_indicator.models import CompanyWiseChartData, PreData, CompanyWiseLiveChartData
 
 links=[
         "https://kite.zerodha.com/chart/web/ciq/NSE/AARTIDRUGS/1147137",
@@ -1631,6 +1633,24 @@ def get_new_insider_trades(session):
         return data_dict
 
 
+def get_pre_market_trades(session):
+        result_dict = {}
+
+        url = 'https://www.nseindia.com/api/market-data-pre-open?key=FO'
+
+        # load cookies:
+        session.get('https://www.nseindia.com/get-quotes/derivatives?symbol=INFY', headers=headers)
+
+        # get data:
+        data = session.get(url, headers=headers).json()
+        data_list = data.get('data', None)
+        if data_list:
+                for element in data_list:
+                        result_dict[element.get('metadata', None).get('symbol', None)] = \
+                                element.get('metadata', None).get('iep', None)
+        return result_dict
+
+
 def five_minutes_candle_data(session, proxy):
 
     try:
@@ -1748,6 +1768,57 @@ def get_curr_month_last_thursday():
                 next_thursday = next_thursday + datetime.timedelta(days=7)
         next_thursday = next_thursday.strftime('%d-%b-%Y')
         return next_thursday
+
+
+def get_strike_prices(comp):
+    s = requests.session()
+    try:
+        url = f'https://www.nseindia.com/api/option-chain-equities?symbol={comp}'
+
+        s.get('https://www.nseindia.com/get-quotes/derivatives?symbol=INFY', headers=headers)
+
+        # get data:
+        data = s.get(url, headers=headers).json()
+        records = data.get('records', None)
+        data_list = records.get('data', None)
+        return [data_dict.get('strikePrice') for data_dict in data_list]
+    except:
+        pass
+
+def five_minutes_live_stocks_listing(session):
+
+    try:
+            url_200 = 'https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%20200'
+
+            session.get('https://www.nseindia.com/get-quotes/derivatives?symbol=INFY', headers=headers)
+
+            # get data:
+            data = session.get(url_200, headers=headers).json()
+            data_dict = json.dumps(data, indent=4)
+            data_list = data.get('data', None)
+
+            if data_list:
+                for element in data_list:
+                        if element.get('priority', None) == 1:
+                                continue
+                        obj = CompanyWiseLiveChartData.objects.filter(symbol=element.get('symbol', None))
+                        print(obj, " OBJ ", element.get('symbol', None))
+                        if obj:
+                                obj[0].last_price['lastprice'].append(float(element.get('lastPrice', None)))
+                                obj[0].save()
+
+                        else:
+                                CompanyWiseLiveChartData.objects.create(symbol=element.get('symbol', None),
+                                                                    last_price={'lastprice':[float(element.get('lastPrice', None))]},
+                                                                    value={'value':[float(element.get('totalTradedValue', None))]})
+                        # vol[index - 1].append(element.get('totalTradedVolume', None))
+
+                        # time_list.append(element.get('lastUpdateTime', None))
+
+    except Exception as e:
+            print(e)
+            print(traceback.format_exc())
+            exit()
 
 # def data():
 #     s = requests.session()
