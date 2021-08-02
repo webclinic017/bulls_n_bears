@@ -4,11 +4,13 @@ from technical_indicator import views
 urlpatterns = [
     url("future_analysis", views.FutureAnalysis.as_view(), name="future_analysis"),
     url("insider_trading_page", views.InsiderTradingPage.as_view(), name="insider_trading_page"),
+    url("pre_market_page", views.PreMarketPriceSetUp.as_view(), name="pre_market_page"),
     url("save_market_data", views.LoadData.as_view(), name="save_market_data"),
     url("save_chart_data", views.LoadChartData.as_view(), name="save_chart_data"),
     url("display_chart_data", views.DisplayResult.as_view(), name="display_chart_data"),
     url("get_pre_data", views.PreDataStore.as_view(), name="get_pre_data"),
     url("get_new_insider_data", views.PublishNewInsiderTrade.as_view(), name="get_new_insider_data"),
+    url("get_pre_market_data", views.GetPreMarketData.as_view(), name="get_pre_market_data"),
     url(
         "companies_for_long_position",
         views.MarketDataTesting.as_view(),
